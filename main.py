@@ -4,8 +4,7 @@ from typing import List
 
 app = FastAPI()
 
-# --- Pydantic Models ---
-
+# Pydantic request models
 class SignupRequest(BaseModel):
     email: str
     password: str
@@ -17,14 +16,12 @@ class LoginRequest(BaseModel):
 class AlertRequest(BaseModel):
     symbol: str
     target_price: float
-    direction: str  # "above" or "below"
+    direction: str
     user_id: int
 
-# --- In-memory storage (for MVP) ---
+# In‑memory storage (MVP)
 users = []
 alerts = []
-
-# --- Endpoints ---
 
 @app.get("/")
 def root():
@@ -32,7 +29,6 @@ def root():
 
 @app.post("/auth/signup")
 def signup(request: SignupRequest):
-    # Check if user exists
     for user in users:
         if user["email"] == request.email:
             raise HTTPException(status_code=400, detail="Email already registered")
@@ -49,7 +45,6 @@ def login(request: LoginRequest):
 
 @app.post("/alerts/add")
 def add_alert(request: AlertRequest):
-    # Validate direction
     if request.direction not in ["above", "below"]:
         raise HTTPException(status_code=400, detail="Direction must be 'above' or 'below'")
     alerts.append({
@@ -62,5 +57,5 @@ def add_alert(request: AlertRequest):
 
 @app.get("/alerts/list/{user_id}")
 def list_alerts(user_id: int):
-    user_alerts = [a for a in alerts if a["user_id"] == user_id]
-    return {"alerts": user_alerts}
+    return {"alerts": [a for a in alerts if a["user_id"] == user_id]}
+
