@@ -3,9 +3,15 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List
-import os
 
 app = FastAPI()
+
+# Serve static files from root directory
+app.mount("/static", StaticFiles(directory="."), name="static")
+
+@app.get("/")
+def home():
+    return FileResponse("index.html")
 
 # Pydantic models
 class SignupRequest(BaseModel):
@@ -26,14 +32,6 @@ class AlertRequest(BaseModel):
 users = []
 alerts = []
 
-# Serve static files
-app.mount("/static", StaticFiles(directory="."), name="static")
-
-@app.get("/")
-def home():
-    return FileResponse("index.html")  # Serve index.html from current directory
-
-# --- API endpoints ---
 @app.post("/auth/signup")
 def signup(request: SignupRequest):
     for user in users:
