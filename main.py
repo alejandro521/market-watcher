@@ -4,7 +4,7 @@ from typing import List
 
 app = FastAPI()
 
-# Pydantic request models
+# Pydantic models for request bodies
 class SignupRequest(BaseModel):
     email: str
     password: str
@@ -19,7 +19,7 @@ class AlertRequest(BaseModel):
     direction: str
     user_id: int
 
-# In‑memory storage (MVP)
+# Temporary in‑memory storage (MVP)
 users = []
 alerts = []
 
@@ -58,4 +58,5 @@ def add_alert(request: AlertRequest):
 @app.get("/alerts/list/{user_id}")
 def list_alerts(user_id: int):
     return {"alerts": [a for a in alerts if a["user_id"] == user_id]}
+
 
