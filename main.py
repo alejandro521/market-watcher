@@ -1,16 +1,18 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List
+import os
 
 app = FastAPI()
 
-# Serve static files from root directory
+# Serve static files (CSS, JS)
 app.mount("/static", StaticFiles(directory="."), name="static")
 
-@app.get("/")
-def home():
+# Serve index.html at the root
+@app.get("/", response_class=HTMLResponse)
+def read_index():
     return FileResponse("index.html")
 
 # Pydantic models
@@ -28,7 +30,7 @@ class AlertRequest(BaseModel):
     direction: str
     user_id: int
 
-# In-memory storage
+# In‑memory storage
 users = []
 alerts = []
 
