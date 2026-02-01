@@ -1,21 +1,10 @@
 body {
     font-family: Arial, sans-serif;
-    max-width: 600px;
-    margin: 20px auto;
+    background-color: #f8f9fa;
 }
 
-input, select {
-    display: block;
-    margin: 5px 0;
-    padding: 5px;
+.card {
+    max-width: 500px;
+    margin: 0 auto 20px auto;
+    border-radius: 10px;
 }
-
-button {
-    margin: 5px 0 15px 0;
-    padding: 5px 10px;
-}
-
-h1, h2, h3 {
-    text-align: center;
-}
-
