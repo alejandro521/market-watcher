@@ -1,6 +1,6 @@
-main.py
-database.py
-models.py
-auth.py
-alerts.py
-requirements.txt
+fastapi
+uvicorn
+sqlalchemy
+passlib[bcrypt]
+requests
+
