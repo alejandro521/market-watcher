@@ -1,66 +1,57 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-from typing import List
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Market Watcher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-light">
 
-app = FastAPI()
+<div class="container py-5">
 
-# Serve static files from root directory
-app.mount("/static", StaticFiles(directory="."), name="static")
+    <h1 class="text-center mb-4">Market Watcher</h1>
 
-@app.get("/")
-def home():
-    return FileResponse("index.html")
+    <!-- Sign Up -->
+    <div id="signup-section" class="card p-4 mb-4 shadow-sm">
+        <h2 class="h5 mb-3">Sign Up</h2>
+        <input class="form-control mb-2" type="email" id="signup-email" placeholder="Email">
+        <input class="form-control mb-2" type="password" id="signup-password" placeholder="Password">
+        <button class="btn btn-primary w-100" onclick="signup()">Sign Up</button>
+        <p id="signup-message" class="mt-2 text-success"></p>
+    </div>
 
-# Pydantic models
-class SignupRequest(BaseModel):
-    email: str
-    password: str
+    <!-- Login -->
+    <div id="login-section" class="card p-4 mb-4 shadow-sm">
+        <h2 class="h5 mb-3">Login</h2>
+        <input class="form-control mb-2" type="email" id="login-email" placeholder="Email">
+        <input class="form-control mb-2" type="password" id="login-password" placeholder="Password">
+        <button class="btn btn-success w-100" onclick="login()">Login</button>
+        <p id="login-message" class="mt-2 text-danger"></p>
+    </div>
 
-class LoginRequest(BaseModel):
-    email: str
-    password: str
+    <!-- Alerts -->
+    <div id="alerts-section" style="display:none;" class="card p-4 shadow-sm">
+        <h2 class="h5 mb-3">Your Alerts</h2>
+        <ul id="alerts-list" class="list-group mb-3"></ul>
 
-class AlertRequest(BaseModel):
-    symbol: str
-    target_price: float
-    direction: str
-    user_id: int
+        <h3 class="h6 mb-2">Add Alert</h3>
+        <input class="form-control mb-2" type="text" id="alert-symbol" placeholder="Symbol (e.g., AAPL)">
+        <input class="form-control mb-2" type="number" id="alert-price" placeholder="Target Price">
+        <select class="form-select mb-2" id="alert-direction">
+            <option value="above">Above</option>
+            <option value="below">Below</option>
+        </select>
+        <button class="btn btn-warning w-100 mb-3" onclick="addAlert()">Add Alert</button>
+        <p id="alert-message" class="text-success"></p>
 
-# In-memory storage
-users = []
-alerts = []
+        <button class="btn btn-danger w-100" onclick="logout()">Logout</button>
+    </div>
 
-@app.post("/auth/signup")
-def signup(request: SignupRequest):
-    for user in users:
-        if user["email"] == request.email:
-            raise HTTPException(status_code=400, detail="Email already registered")
-    user_id = len(users) + 1
-    users.append({"id": user_id, "email": request.email, "password": request.password})
-    return {"message": "Account created", "user_id": user_id}
+</div>
 
-@app.post("/auth/login")
-def login(request: LoginRequest):
-    for user in users:
-        if user["email"] == request.email and user["password"] == request.password:
-            return {"message": "Login OK", "user_id": user["id"]}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
-
-@app.post("/alerts/add")
-def add_alert(request: AlertRequest):
-    if request.direction not in ["above", "below"]:
-        raise HTTPException(status_code=400, detail="Direction must be 'above' or 'below'")
-    alerts.append({
-        "symbol": request.symbol,
-        "target_price": request.target_price,
-        "direction": request.direction,
-        "user_id": request.user_id
-    })
-    return {"alert_created": request.symbol}
-
-@app.get("/alerts/list/{user_id}")
-def list_alerts(user_id: int):
-    return {"alerts": [a for a in alerts if a["user_id"] == user_id]}
+<script src="/static/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
 
