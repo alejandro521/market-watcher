@@ -1,10 +1,13 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List
+import os
 
 app = FastAPI()
 
-# Pydantic models for request bodies
+# Pydantic models
 class SignupRequest(BaseModel):
     email: str
     password: str
@@ -19,14 +22,18 @@ class AlertRequest(BaseModel):
     direction: str
     user_id: int
 
-# Temporary in‑memory storage (MVP)
+# In-memory storage
 users = []
 alerts = []
 
-@app.get("/")
-def root():
-    return {"status": "running"}
+# Serve static files
+app.mount("/static", StaticFiles(directory="."), name="static")
 
+@app.get("/")
+def home():
+    return FileResponse("index.html")  # Serve index.html from current directory
+
+# --- API endpoints ---
 @app.post("/auth/signup")
 def signup(request: SignupRequest):
     for user in users:
@@ -58,5 +65,6 @@ def add_alert(request: AlertRequest):
 @app.get("/alerts/list/{user_id}")
 def list_alerts(user_id: int):
     return {"alerts": [a for a in alerts if a["user_id"] == user_id]}
+
 
 
